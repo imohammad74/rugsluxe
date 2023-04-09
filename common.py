@@ -6,23 +6,15 @@ from db import DBManagement as db
 class Common:
 
     @staticmethod
-    def last_url(total_product):
+    def last_url(soup) -> list:
         """
         this function helps to get end of urls.
-        for ex: https://rugs.rugstudio.com/newnav/96 ; 96 is returned by this function.
+        for ex: https://rugsluxe.com/area-rugs.html?p=2&product_list_limit=96 ; 2 is returned by this function.
         """
-        show_product_in_plp = 48
-        end_url_list = [int(i) for i in range(0, int(total_product), show_product_in_plp)]
-        return end_url_list
-
-    @staticmethod
-    def number_of_product(soup):
-        """
-        this function helps to find last pages of plp.
-        """
-        total_product_string = soup.find_all(class_='pageLink')
-        number_of_product = int(total_product_string[-1].text) * 48
-        return number_of_product
+        last_url_string = soup.find(class_='page-of').text
+        last_url = int(re.search(r'\d+', last_url_string).group())
+        urls = [i + 1 for i in range(0, last_url)]
+        return urls
 
     @staticmethod
     def get_url(plp_url):
