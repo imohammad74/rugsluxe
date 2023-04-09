@@ -37,6 +37,10 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
+*.db
+*.xml
+*.iml
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
@@ -127,3 +131,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+*.sqlite
