@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup
 from common import Common
 from db import DBManagement as db
 from get_all_brands_url import GetAllBrandsURL
-from woker import Worker
 
 
 class GetBrandsURL:
@@ -32,5 +31,4 @@ class GetBrandsURL:
         for i in range(len(brands_url)):
             brand = {'brand': brands_url[i][1], 'url_address': brands_url[i][2]}
             self.main(brand)
-            time.sleep(2)
         # Worker(fn=self.main, data=brands, max_worker=max_worker)
