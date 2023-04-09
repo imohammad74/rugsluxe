@@ -22,7 +22,7 @@ class Main:
 
     @staticmethod
     def get_urls(all_brand):
-        url = "https://www.rugs-direct.com/Store/nav/Category-Area-Rugs/"
+        url = "https://rugsluxe.com/area-rugs.html"
         re = requests.get(url)
         soup = BeautifulSoup(re.content, "html.parser")
         params = {
@@ -37,6 +37,7 @@ class Main:
 
     def get_pdp(self, resume: bool):
         if resume:
+            max_worker = Common.max_worker()
             last_url_id = self.find_last_crawled_url()
             print(last_url_id)
             urls = db.fetch_datas(db_file=db.db_file(), table_name=db.db_table()[0], all_columns=False,
