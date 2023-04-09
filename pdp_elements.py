@@ -32,13 +32,13 @@ class PDPElements:
     @staticmethod
     def title(soup) -> str:
         """get title of pdp"""
-        title = soup.find(class_='pdp-title').text
+        title = soup.find(class_='page-title').text
         title = Common.remove_quotes(title)
         return title
 
     @staticmethod
     def description(soup) -> str:
-        desc = soup.find(class_='product-overview-data').text
+        desc = soup.find(class_='descTxt').text
         desc = Common.remove_quotes(desc)
         return desc
 
@@ -89,13 +89,9 @@ class PDPElements:
         return variant_url
 
     def design_id(self, soup) -> str:
-        features = self.features(soup)
-        for feature in features:
-            if feature['title'] == 'Style ID':
-                design_id = Common.remove_quotes(feature['value'])
-                return design_id
-            else:
-                return 'Not found'
+        title = self.title(soup).split('|')
+        design_id = title[1].strip()
+        return design_id
 
     @staticmethod
     def shape_size(soup) -> tuple:
@@ -111,8 +107,8 @@ class PDPElements:
 
     def collection(self, soup) -> str:
         """ get collection name"""
-        collection_string = self.title(soup).split('-')
-        collection = collection_string[0]
+        title = self.title(soup).split('|')
+        collection = title[0]
         collection = Common.remove_quotes(collection)
         collection = collection.strip()
         return collection
