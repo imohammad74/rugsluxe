@@ -33,6 +33,7 @@ class PDPElements:
     def title(soup) -> str:
         """get title of pdp"""
         title = soup.find(class_='page-title').text
+        title = title.replace(' ', '')
         title = Common.remove_quotes(title)
         return title
 

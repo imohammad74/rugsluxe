@@ -1,9 +1,9 @@
 import time
 
-import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 
-from common import Common
 from db import DBManagement as db
 from pdp_elements import PDPElements
 from table import PriceTable
@@ -12,11 +12,21 @@ from table import PriceTable
 class PDP:
     @staticmethod
     def main(data):
-        url = data[0]
-        brand = data[1]
-        r = requests.get(url)
-        soup = BeautifulSoup(r.content, 'html.parser')
-        if PDPElements.is_in_stock(soup):
+        total_count = len(data)
+        urls = [data[i][0] for i in range(total_count)]
+        brands = [data[i][1] for i in range(total_count)]
+        # r = requests.get(url)
+        options = Options()
+        options.headless = True
+        driver = webdriver.Firefox(options=options)
+        for i in range(total_count):
+            url = urls[i]
+            brand = brands[i]
+            driver.get(url)
+            print(f'{i + 1} of {total_count} | {url}')
+            time.sleep(0.5)
+            data = driver.page_source
+            soup = BeautifulSoup(data, 'html.parser')
             try:
                 features = PDPElements().features_title(soup)
             except:
@@ -55,11 +65,13 @@ class PDP:
                 material = ''
             for variant in variants:
                 try:
-                    size = PDPElements.shape_size(soup)[variants.index(variant)][0]
+                    # size = PDPElements.shape_size(soup)[variants.index(variant)][0]
+                    size = variant['size']
                 except:
                     size = ''
                 try:
-                    shape = PDPElements.shape_size(soup)[variants.index(variant)][1]
+                    # shape = PDPElements.shape_size(soup)[variants.index(variant)][1]
+                    shape = variant['shape']
                 except:
                     shape = ''
                 try:
@@ -92,12 +104,7 @@ class PDP:
                                    columns=[{'column': 'url', 'value': url}])
                     # print('error')
             print(f'"{title}" finish!')
-        else:
-            print('Product is out of stock')
-            query = f'''INSERT INTO NoData (URLAddress, ErrorMsg) VALUES ('{url}', 'Out of stock')'''
-            db.custom_query(db_file=db.db_file(), query=query)
-
+        driver.quit()
 
     def __init__(self, data):
-        time.sleep(2)
         self.main(data)
