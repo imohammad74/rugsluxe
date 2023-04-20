@@ -37,22 +37,28 @@ class Main:
 
     def get_pdp(self, resume: bool):
         # max_worker = Common.max_worker()
+        urls = db.fetch_datas(db_file=db.db_file(), table_name=db.db_table()[0], all_columns=False,
+                              columns=['url_address', 'brand'])
+        total_urls = len(urls)
+        last_url_id = self.find_last_crawled_url()
         if resume:
-            last_url_id = self.find_last_crawled_url()
             print(last_url_id)
-            urls = db.fetch_datas(db_file=db.db_file(), table_name=db.db_table()[0], all_columns=False,
-                                  columns=['url_address', 'brand'])
-            total_url = len(urls)
-            print(total_url)
-            for i in range(last_url_id, total_url):
-                print(i)
-                PDP(urls[i])
-                db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
-                               columns=[{'column': 'seq', 'value': i}],
-                               condition="name='URLs'")
+            print(total_urls)
+            params = {
+                'data': urls,
+                'total_urls': total_urls,
+                'start_point': last_url_id
+            }
+            PDP(params)
+
         else:
             urls = db.fetch_datas(db_file=db.db_file(), table_name=db.db_table()[0], all_columns=False,
                                   columns=['url_address', 'brand'])
+            params = {
+                'urls': urls,
+                'total_urls': total_urls,
+                'start_point': 0
+            }
             PDP(urls)
         db.custom_query(db_file=db.db_file(), query=Common.sql_replace(table_name=db.db_table()[2])[0])
         db.custom_query(db_file=db.db_file(), query=Common.sql_replace(table_name=db.db_table()[2])[1])

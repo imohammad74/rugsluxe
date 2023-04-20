@@ -11,15 +11,16 @@ from table import PriceTable
 
 class PDP:
     @staticmethod
-    def main(data):
-        total_count = len(data)
-        urls = [data[i][0] for i in range(total_count)]
-        brands = [data[i][1] for i in range(total_count)]
+    def main(params):
+        start_point = params['start_point']
+        total_count = params['total_urls']
+        urls = [params['data'][i][0] for i in range(total_count)]
+        brands = [params['data'][i][1] for i in range(total_count)]
         # r = requests.get(url)
         options = Options()
         options.headless = True
         driver = webdriver.Firefox(options=options)
-        for i in range(total_count):
+        for i in range(start_point, total_count):
             url = urls[i]
             brand = brands[i]
             driver.get(url)
@@ -98,6 +99,8 @@ class PDP:
                 ]
                 try:
                     db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[2], columns=all_columns)
+                    db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
+                                   columns=[{'column': 'seq', 'value': i}], condition="name='URLs'")
                     # print(all_columns)
                 except:
                     db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[3],
@@ -106,5 +109,5 @@ class PDP:
             print(f'"{title}" finish!')
         driver.quit()
 
-    def __init__(self, data):
-        self.main(data)
+    def __init__(self, params):
+        self.main(params)
