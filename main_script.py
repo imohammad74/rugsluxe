@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 from check_price import CheckPrice
 from common import Common
 from db import DBManagement as db
-from get_all_brands_url import GetAllBrandsURL
 from get_brands_url import GetBrandsURL
 from mail import Mail
 from pdp import PDP
@@ -21,8 +20,7 @@ class Main:
         return last_url
 
     @staticmethod
-    def get_urls(all_brand):
-        url = "https://rugsluxe.com/area-rugs.html"
+    def params(url: str) -> dict:
         re = requests.get(url)
         soup = BeautifulSoup(re.content, "html.parser")
         params = {
@@ -30,10 +28,24 @@ class Main:
             're': re,
             'soup': soup
         }
-        if all_brand is True:
-            GetAllBrandsURL(params=params)
+        return params
+
+    @staticmethod
+    def get_urls(all_brand: bool, pillows: bool):
+        categories = [
+            {'category_name': 'rug', 'url': "https://rugsluxe.com/area-rugs.html"},
+            {'category_name': 'pillow', 'url': 'https://rugsluxe.com/pillows.html'}
+        ]
+        if all_brand and pillows is True:
+            for category in categories:
+                category_name = category['category_name']
+                GetBrandsURL(category_name=category_name)
+        elif pillows is True:
+            category_name = categories[1]['category_name']
+            GetBrandsURL(category_name=category_name)
         else:
-            GetBrandsURL()
+            category_name = categories[0]['category_name']
+            GetBrandsURL(category_name=category_name)
 
     def get_pdp(self, resume: bool):
         # max_worker = Common.max_worker()
@@ -66,17 +78,19 @@ class Main:
     def __init__(self):
         while True:
             print('''
-            [1]: Get All URLs
-            [2]: Get Some Brand URLs
-            [3]: Get PDPs
-            [4]: Resume Get PDPs
-            [5]: Check Price
-            ''')
+                [1]: Get All URLs
+                [2]: Get Some Rugs Brand URLs
+                [3]: Get Rugs PDP
+                [4]: Resume Get PDPs
+                [5]: Check Price
+                [6]: Get Pillows URLs
+                [7]: Get Pillows PDP
+                ''')
             select_option = input("Enter a option: ")
             if select_option == '1':
-                self.get_urls(all_brand=True)
+                self.get_urls(all_brand=True, pillows=True)
             elif select_option == '2':
-                self.get_urls(all_brand=False)
+                self.get_urls(all_brand=False, pillows=False)
             elif select_option == '3':
                 # Mail(attachment=False)
                 self.get_pdp(resume=False)
@@ -86,6 +100,9 @@ class Main:
             elif select_option == '5':
                 Mail(attachment=True)
                 CheckPrice()
+            elif select_option == '6':
+                # Mail(attachment=False)
+                self.get_urls(all_brand=False, pillows=True)
             else:
                 continue
 

@@ -1,4 +1,4 @@
-import time
+# import time
 from datetime import datetime
 
 import requests
@@ -15,6 +15,7 @@ class GetAllBrandsURL:
     @staticmethod
     def main(params):
         """This function is main function in this script and get urls and insert them to database."""
+        category = params['category']
         brand = params['brand']
         main_url = params['url']
         url_list = Common.last_url(params['soup'])
@@ -41,9 +42,13 @@ class GetAllBrandsURL:
                     {
                         'column': 'brand',
                         'value': brand,
+                    },
+                    {
+                        'column': 'category',
+                        'value': category,
                     }
                 ])
-        print(f'{brand} finish!')
+        print(f'{category} -> {brand} finish!')
 
     def __init__(self, params):
         self.main(params)
