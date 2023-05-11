@@ -47,16 +47,17 @@ class Main:
             category_name = categories[0]['category_name']
             GetBrandsURL(category_name=category_name)
 
-    def get_pdp(self, resume: bool):
+    def get_pdp(self, resume: bool, category_name: str):
         # max_worker = Common.max_worker()
         urls = db.fetch_datas(db_file=db.db_file(), table_name=db.db_table()[0], all_columns=False,
-                              columns=['url_address', 'brand'])
+                              columns=['url_address', 'brand', 'category'])
         total_urls = len(urls)
         last_url_id = self.find_last_crawled_url()
         if resume:
             print(last_url_id)
             print(total_urls)
             params = {
+                'category': category_name,
                 'data': urls,
                 'total_urls': total_urls,
                 'start_point': last_url_id
@@ -64,14 +65,17 @@ class Main:
             PDP(params)
 
         else:
-            urls = db.fetch_datas(db_file=db.db_file(), table_name=db.db_table()[0], all_columns=False,
-                                  columns=['url_address', 'brand'])
+            all_urls = db.fetch_datas(db_file=db.db_file(), table_name=db.db_table()[0], all_columns=False,
+                                      columns=['url_address', 'brand', 'category'])
+            pillow_urls = [(url[0], url[1], url[2]) for url in all_urls if url[2] == 'pillow']
+            rug_urls = [(url[0], url[1], url[2]) for url in all_urls if url[2] == 'rug']
             params = {
-                'urls': urls,
-                'total_urls': total_urls,
+                'category': category_name,
+                'data': rug_urls if category_name == 'rug' else pillow_urls,
+                'total_urls': len(rug_urls) if category_name == 'rug' else len(pillow_urls),
                 'start_point': 0
             }
-            PDP(urls)
+            PDP(params)
         db.custom_query(db_file=db.db_file(), query=Common.sql_replace(table_name=db.db_table()[2])[0])
         db.custom_query(db_file=db.db_file(), query=Common.sql_replace(table_name=db.db_table()[2])[1])
 
@@ -93,16 +97,19 @@ class Main:
                 self.get_urls(all_brand=False, pillows=False)
             elif select_option == '3':
                 # Mail(attachment=False)
-                self.get_pdp(resume=False)
+                self.get_pdp(resume=False, category_name='rug')
             elif select_option == '4':
                 # Mail(attachment=False)
-                self.get_pdp(resume=True)
+                self.get_pdp(resume=True, category_name='rug')
             elif select_option == '5':
                 Mail(attachment=True)
                 CheckPrice()
             elif select_option == '6':
                 # Mail(attachment=False)
                 self.get_urls(all_brand=False, pillows=True)
+            elif select_option == '7':
+                # Mail(attachment=False)
+                self.get_pdp(resume=False, category_name='pillow')
             else:
                 continue
 

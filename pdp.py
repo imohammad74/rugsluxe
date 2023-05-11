@@ -16,6 +16,7 @@ class PDP:
         total_count = params['total_urls']
         urls = [params['data'][i][0] for i in range(total_count)]
         brands = [params['data'][i][1] for i in range(total_count)]
+        categories = [params['data'][i][2] for i in range(total_count)]
         # r = requests.get(url)
         options = Options()
         options.headless = True
@@ -23,11 +24,13 @@ class PDP:
         for i in range(start_point, total_count):
             url = urls[i]
             brand = brands[i]
+            category = categories[i]
             driver.get(url)
             print(f'{i + 1} of {total_count} | {url}')
-            time.sleep(0.5)
+            time.sleep(2)
             data = driver.page_source
             soup = BeautifulSoup(data, 'html.parser')
+            aa = {'category': category, 'data': soup}
             try:
                 features = PDPElements().features_title(soup)
             except:
@@ -37,11 +40,12 @@ class PDP:
             except:
                 feature_values = []
             try:
-                variants = PriceTable.main(soup)
+                # variants = PriceTable.main(soup)
+                variants = PriceTable.main(aa)
             except:
                 variants = []
             try:
-                title = PDPElements.title(soup)
+                title = PDPElements.title(soup)[0]
             except:
                 title = ''
             try:
@@ -65,6 +69,7 @@ class PDP:
             except:
                 material = ''
             for variant in variants:
+                print(11111)
                 try:
                     # size = PDPElements.shape_size(soup)[variants.index(variant)][0]
                     size = variant['size']
@@ -81,32 +86,59 @@ class PDP:
                     msrp = ''
                 try:
                     sale_price = variant['price']
+                    print(sale_price)
                 except:
                     sale_price = ''
-                all_columns = [
-                    {'column': 'title', 'value': title},
-                    {'column': 'description', 'value': description},
-                    {'column': 'url', 'value': url},
-                    {'column': 'size', 'value': size},
-                    {'column': 'shape', 'value': shape},
-                    {'column': 'brand', 'value': brand},
-                    {'column': 'weave', 'value': construction},
-                    {'column': 'material', 'value': material},
-                    {'column': 'msrp', 'value': msrp},
-                    {'column': 'collection', 'value': collection},
-                    {'column': 'design_id', 'value': design_id},
-                    {'column': 'sale_price', 'value': sale_price}
-                ]
-                try:
-                    db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[2], columns=all_columns)
-                    db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
-                                   columns=[{'column': 'seq', 'value': i}], condition="name='URLs'")
-                    # print(all_columns)
-                except:
-                    db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[3],
-                                   columns=[{'column': 'url', 'value': url}])
-                    # print('error')
-            print(f'"{title}" finish!')
+                if category == 'rug':
+                    print(1111)
+                    all_columns = [
+                        {'column': 'title', 'value': title},
+                        {'column': 'description', 'value': description},
+                        {'column': 'url', 'value': url},
+                        {'column': 'size', 'value': size},
+                        {'column': 'shape', 'value': shape},
+                        {'column': 'brand', 'value': brand},
+                        {'column': 'weave', 'value': construction},
+                        {'column': 'material', 'value': material},
+                        {'column': 'msrp', 'value': msrp},
+                        {'column': 'collection', 'value': collection},
+                        {'column': 'design_id', 'value': design_id},
+                        {'column': 'sale_price', 'value': sale_price}
+                    ]
+                    print(all_columns)
+
+                    try:
+                        db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[2], columns=all_columns)
+                        db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
+                                       columns=[{'column': 'seq', 'value': i}], condition="name='URLs'")
+                        # print(all_columns)
+                    except:
+                        db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[3],
+                                       columns=[{'column': 'url', 'value': url}])
+                        # print('error')
+                if category == 'pillow':
+                    print(2222)
+                    all_columns = [
+                        {'column': 'Title', 'value': title},
+                        {'column': 'URL', 'value': url},
+                        {'column': 'Size', 'value': size},
+                        {'column': 'Shape', 'value': shape},
+                        {'column': 'Brand', 'value': brand},
+                        {'column': 'CollectionName', 'value': collection},
+                        {'column': 'DesignId', 'value': design_id},
+                        {'column': 'Price', 'value': sale_price}
+                    ]
+                    print(all_columns)
+                    try:
+                        db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[8], columns=all_columns)
+                        db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
+                                       columns=[{'column': 'seq', 'value': i}], condition="name='URLs'")
+                        # print(all_columns)
+                    except:
+                        db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[3],
+                                       columns=[{'column': 'url', 'value': url}])
+                        # print('error')
+            print(f'"{category} -> {title}" finish!')
         driver.quit()
 
     def __init__(self, params):

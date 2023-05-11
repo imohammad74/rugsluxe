@@ -12,7 +12,7 @@ class DBManagement:
     @staticmethod
     def db_table():
         db_table = ['URLs', 'Brands', 'PDP', 'NoData',
-                    'sqlite_sequence', 'CheckPrices', 'CheckPriceWithSource', 'Source'
+                    'sqlite_sequence', 'CheckPrices', 'CheckPriceWithSource', 'PillowSource', 'PillowPDP'
                     ]
         return db_table
 

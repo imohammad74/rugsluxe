@@ -32,10 +32,11 @@ class PDPElements:
     @staticmethod
     def title(soup) -> str:
         """get title of pdp"""
-        title = soup.find(class_='page-title').text
-        title = title.replace(' ', '')
-        title = Common.remove_quotes(title)
-        return title
+        title_raw = soup.find(class_='page-title').text
+        title = Common.remove_quotes(title_raw)
+        title_without_space = title_raw.replace(' ', '')
+        title_without_space = Common.remove_quotes(title_without_space)
+        return title, title_without_space
 
     @staticmethod
     def description(soup) -> str:
@@ -108,7 +109,7 @@ class PDPElements:
 
     def collection(self, soup) -> str:
         """ get collection name"""
-        title = self.title(soup).split('|')
+        title = self.title(soup)[0].split('|')
         collection = title[0]
         collection = Common.remove_quotes(collection)
         collection = collection.strip()
