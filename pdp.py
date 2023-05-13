@@ -16,19 +16,12 @@ class PDP:
         urls = [params['data'][i][0] for i in range(total_count)]
         brands = [params['data'][i][1] for i in range(total_count)]
         categories = [params['data'][i][2] for i in range(total_count)]
-
-        # options = Options()
-        # options.headless = True
-        # driver = webdriver.Firefox(options=options)
         for i in range(start_point, total_count):
             url = urls[i]
             brand = brands[i]
             category = categories[i]
             r = requests.get(url)
-            # driver.get(url)
             print(f'{i + 1} of {total_count} | {url}')
-            # time.sleep(2)
-            # data = driver.page_source
             soup = BeautifulSoup(r.content, 'html.parser')
             data = {'category': category, 'data': soup}
             try:
@@ -40,7 +33,6 @@ class PDP:
             except:
                 feature_values = []
             try:
-                # variants = PriceTable.main(soup)
                 variants = PriceTable(data).main(data)
             except:
                 variants = []
@@ -70,12 +62,10 @@ class PDP:
                 material = ''
             for variant in variants:
                 try:
-                    # size = PDPElements.shape_size(soup)[variants.index(variant)][0]
                     size = variant['size']
                 except:
                     size = ''
                 try:
-                    # shape = PDPElements.shape_size(soup)[variants.index(variant)][1]
                     shape = variant['shape']
                 except:
                     shape = ''
@@ -110,8 +100,12 @@ class PDP:
 
                     try:
                         db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[2], columns=all_columns)
-                        db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
-                                       columns=[{'column': 'seq', 'value': i}], condition="name='URLs'")
+                        if category == 'rug':
+                            db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
+                                           columns=[{'column': 'seq', 'value': i}], condition="name='URLs'")
+                        if category == 'pillow':
+                            db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
+                                           columns=[{'column': 'seq', 'value': i}], condition="name='PillowURLs'")
                         # print(all_columns)
                     except:
                         db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[3],
