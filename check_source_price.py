@@ -23,7 +23,7 @@ class PriceCheckWithSource:
         source_data = self.get_data(table_name=db.db_table()[7],
                                     columns=['CollectionName', 'DesignID', 'Size', 'Price', 'Brand', 'sku', 'UPC'])
         select_data = self.get_data(table_name=db.db_table()[2],
-                                    columns=['collection', 'design_id', 'size', 'sale_price'])
+                                    columns=['collection', 'design_id', 'sku', 'sale_price'])
         source_collection = set(source_data[i][0] for i in range(len(source_data)))
         select_collection = set(select_data[i][0] for i in range(len(select_data)))
         same_collection = list(source_collection.intersection(select_collection))
@@ -34,7 +34,7 @@ class PriceCheckWithSource:
             for tup_01 in source_data:
                 if collection == tup_01[0]:
                     for tup_02 in select_data:
-                        if tup_01[0] == tup_02[0] and tup_01[1] == tup_02[1] and tup_01[2] == tup_02[2]:
+                        if tup_01[5] == tup_02[2]:
                             try:
                                 collection_name = tup_01[0]
                                 design_id = tup_01[1]
