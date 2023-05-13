@@ -100,9 +100,6 @@ class PDP:
                         db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[2], columns=all_columns)
                         db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
                                        columns=[{'column': 'seq', 'value': i}], condition="name='URLs'")
-                        if category == 'pillow':
-                            db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
-                                           columns=[{'column': 'seq', 'value': i}], condition="name='PillowURLs'")
                         # print(all_columns)
                     except:
                         db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[3],

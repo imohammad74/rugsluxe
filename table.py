@@ -14,31 +14,17 @@ class PriceTable:
         return products_json
 
     def main(self, params) -> list:
-        category = params['category']
         soup = params['data']
-        if category == 'pillow':
-            variants = self.find_product(soup)
-            products = []
-            for variant in variants:
-                sku = variant['sku']
-                price = variant['price']
-                variant_ = {
-                    'price': price,
-                    'sku': sku,
-                }
-                products.append(variant_)
-                return products
-        if category == 'rug':
-            variants = self.find_product(soup)
-            products = []
-            for variant in variants:
-                sku = variant['sku']
-                price = variant['price']
-                variant_ = {
-                    'price': price,
-                    'sku': sku,
-                }
-                products.append(variant_)
+        products = []
+        variants = self.find_product(soup)
+        for variant in variants:
+            sku = variant['sku']
+            price = variant['price']
+            variant_ = {
+                'price': price,
+                'sku': sku,
+            }
+            products.append(variant_)
         return products
 
     def __init__(self, soup):
