@@ -119,7 +119,6 @@ class PDP:
                         {'column': 'DesignId', 'value': design_id},
                         {'column': 'Price', 'value': sale_price}
                     ]
-                    print(all_columns)
                     try:
                         db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[8], columns=all_columns)
                         db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
