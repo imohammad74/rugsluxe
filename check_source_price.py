@@ -20,10 +20,10 @@ class PriceCheckWithSource:
 
     def check_price(self):
         current_time = int(now.strftime("%y%m%d"))
-        source_data = self.get_data(table_name=db.db_table()[6],
-                                    columns=['CollectionName', 'DesignID', 'Shape', 'Size', 'Price', 'Brand'])
+        source_data = self.get_data(table_name=db.db_table()[7],
+                                    columns=['CollectionName', 'DesignID', 'Size', 'Price', 'Brand', 'sku', 'UPC'])
         select_data = self.get_data(table_name=db.db_table()[2],
-                                    columns=['collection', 'design_id', 'shape', 'size', 'sale_price'])
+                                    columns=['collection', 'design_id', 'size', 'sale_price'])
         source_collection = set(source_data[i][0] for i in range(len(source_data)))
         select_collection = set(select_data[i][0] for i in range(len(select_data)))
         same_collection = list(source_collection.intersection(select_collection))
@@ -34,33 +34,30 @@ class PriceCheckWithSource:
             for tup_01 in source_data:
                 if collection == tup_01[0]:
                     for tup_02 in select_data:
-                        if tup_01[0] == tup_02[0] and tup_01[1] == tup_02[1] and tup_01[2] == tup_02[2] and \
-                                tup_01[3] == tup_02[3]:
+                        if tup_01[0] == tup_02[0] and tup_01[1] == tup_02[1] and tup_01[2] == tup_02[2]:
                             try:
                                 collection_name = tup_01[0]
                                 design_id = tup_01[1]
-                                shape = tup_01[2]
-                                size = Common.find_size(tup_01[3])
-                                source_price = tup_01[4]
-                                select_price = tup_02[4]
-                                brand = tup_01[5]
-                                upc =
-                                sku =
-                                minus = str(float(tup_02[4]) - float(tup_01[4]))
-                                minus = minus.format(minus, '.2f')
+                                size = Common.find_size(tup_01[2])
+                                source_price = tup_01[3]
+                                select_price = tup_02[3]
+                                brand = tup_01[4]
+                                sku = tup_01[5]
+                                upc = tup_01[6]
+                                minus = float(float(select_price) - float(source_price))
+                                minus = round(minus)
                             except IndexError:
                                 source_price = ''
                                 select_price = ''
                                 minus = ''
                             columns = [
-                                {'column': 'CrawlSource', 'value': 'RugsDirect'},
-                                {'column': 'upc', 'value': },
-                                {'column': 'sku', 'value': },
+                                {'column': 'CrawlSource', 'value': 'RugsLuxe'},
+                                {'column': 'upc', 'value': upc},
+                                {'column': 'sku', 'value': sku},
                                 {'column': 'LastUpdate', 'value': current_time},
                                 {'column': 'BrandName', 'value': brand},
                                 {'column': 'CollectionName', 'value': collection_name},
                                 {'column': 'DesignId', 'value': design_id},
-                                {'column': 'Shape', 'value': shape},
                                 {'column': 'Size', 'value': size},
                                 {'column': 'SourcePrice', 'value': source_price},
                                 {'column': 'CrawlPrice', 'value': select_price},
@@ -69,4 +66,5 @@ class PriceCheckWithSource:
                             db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[5], columns=columns)
         db.custom_query(db_file=db.db_file(), query=Common.sql_replace(table_name=db.db_table()[5])[0])
         db.custom_query(db_file=db.db_file(), query=Common.sql_replace(table_name=db.db_table()[5])[1])
+        # db.custom_query(db_file=db.db_file(), query=Common.sql_replace(table_name=db.db_table()[5])[2])
         print('finish')

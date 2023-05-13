@@ -1,8 +1,7 @@
-import time
-
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.firefox.options import Options
+
+import requests
+from bs4 import BeautifulSoup
 
 from db import DBManagement as db
 from pdp_elements import PDPElements
@@ -17,20 +16,21 @@ class PDP:
         urls = [params['data'][i][0] for i in range(total_count)]
         brands = [params['data'][i][1] for i in range(total_count)]
         categories = [params['data'][i][2] for i in range(total_count)]
-        # r = requests.get(url)
-        options = Options()
-        options.headless = True
-        driver = webdriver.Firefox(options=options)
+
+        # options = Options()
+        # options.headless = True
+        # driver = webdriver.Firefox(options=options)
         for i in range(start_point, total_count):
             url = urls[i]
             brand = brands[i]
             category = categories[i]
-            driver.get(url)
+            r = requests.get(url)
+            # driver.get(url)
             print(f'{i + 1} of {total_count} | {url}')
-            time.sleep(2)
-            data = driver.page_source
-            soup = BeautifulSoup(data, 'html.parser')
-            aa = {'category': category, 'data': soup}
+            # time.sleep(2)
+            # data = driver.page_source
+            soup = BeautifulSoup(r.content, 'html.parser')
+            data = {'category': category, 'data': soup}
             try:
                 features = PDPElements().features_title(soup)
             except:
@@ -41,7 +41,7 @@ class PDP:
                 feature_values = []
             try:
                 # variants = PriceTable.main(soup)
-                variants = PriceTable.main(aa)
+                variants = PriceTable(data).main(data)
             except:
                 variants = []
             try:
@@ -69,7 +69,6 @@ class PDP:
             except:
                 material = ''
             for variant in variants:
-                print(11111)
                 try:
                     # size = PDPElements.shape_size(soup)[variants.index(variant)][0]
                     size = variant['size']
@@ -86,11 +85,13 @@ class PDP:
                     msrp = ''
                 try:
                     sale_price = variant['price']
-                    print(sale_price)
                 except:
                     sale_price = ''
+                try:
+                    sku = variant['sku']
+                except:
+                    sku = ''
                 if category == 'rug':
-                    print(1111)
                     all_columns = [
                         {'column': 'title', 'value': title},
                         {'column': 'description', 'value': description},
@@ -103,9 +104,9 @@ class PDP:
                         {'column': 'msrp', 'value': msrp},
                         {'column': 'collection', 'value': collection},
                         {'column': 'design_id', 'value': design_id},
+                        {'column': 'sku', 'value': sku},
                         {'column': 'sale_price', 'value': sale_price}
                     ]
-                    print(all_columns)
 
                     try:
                         db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[2], columns=all_columns)
@@ -117,7 +118,6 @@ class PDP:
                                        columns=[{'column': 'url', 'value': url}])
                         # print('error')
                 if category == 'pillow':
-                    print(2222)
                     all_columns = [
                         {'column': 'Title', 'value': title},
                         {'column': 'URL', 'value': url},
@@ -139,7 +139,7 @@ class PDP:
                                        columns=[{'column': 'url', 'value': url}])
                         # print('error')
             print(f'"{category} -> {title}" finish!')
-        driver.quit()
+        # driver.quit()
 
     def __init__(self, params):
         self.main(params)
