@@ -1,5 +1,3 @@
-from bs4 import BeautifulSoup
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -101,7 +99,7 @@ class PDP:
                     try:
                         db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[2], columns=all_columns)
                         db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
-                                        columns=[{'column': 'seq', 'value': i}], condition="name='URLs'")
+                                       columns=[{'column': 'seq', 'value': i}], condition="name='URLs'")
                         if category == 'pillow':
                             db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
                                            columns=[{'column': 'seq', 'value': i}], condition="name='PillowURLs'")
@@ -114,7 +112,7 @@ class PDP:
                     all_columns = [
                         {'column': 'Title', 'value': title},
                         {'column': 'URL', 'value': url},
-                        {'column': 'Size', 'value': size},
+                        {'column': 'SKU', 'value': sku},
                         {'column': 'Shape', 'value': shape},
                         {'column': 'Brand', 'value': brand},
                         {'column': 'CollectionName', 'value': collection},
