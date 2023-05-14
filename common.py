@@ -136,5 +136,5 @@ class Common:
         """
         to_double_quote = f"""UPDATE {table_name} SET size = REPLACE(size, '+', '"')"""
         to_single_quote = f"""UPDATE {table_name} SET size = REPLACE(size, '-', "'")"""
-        to_single_quote = f"""UPDATE {table_name} SET size = REPLACE(size, 'X', "x")"""
-        return to_single_quote, to_double_quote
+        to_small_case = f"""UPDATE {table_name} SET size = REPLACE(size, 'X', "x")"""
+        return to_single_quote, to_double_quote, to_small_case

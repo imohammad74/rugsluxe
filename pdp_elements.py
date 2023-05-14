@@ -30,7 +30,7 @@ class PDPElements:
         return brand
 
     @staticmethod
-    def title(soup) -> str:
+    def title(soup) -> tuple:
         """get title of pdp"""
         title_raw = soup.find(class_='page-title').text
         title = Common.remove_quotes(title_raw)
@@ -90,27 +90,54 @@ class PDPElements:
         variant_url = list(set([f'{main_url}{url["href"]}' for url in content]))
         return variant_url
 
-    def design_id(self, soup) -> str:
-        title = self.title(soup).split('|')
-        design_id = title[1].strip()
+    @staticmethod
+    def design_id(soup) -> str:
+        design_id = soup.find('td', {'data-th': 'Design Id'}).text
         return design_id
 
     @staticmethod
-    def shape_size(soup) -> tuple:
-        price_table = soup.find_all(class_='p-tile product_tile')
-        variants = []
-        for item in price_table:
-            string = item.find(class_='sizedesc').text
-            size = Common.find_size(string)
-            shape = Common.find_shape(string)
-            variant = (size, shape)
-            variants.append(variant)
-        return variants
+    def shape(soup) -> str:
+        shape = soup.find('td', {'data-th': 'Shape'}).text
+        return shape
 
-    def collection(self, soup) -> str:
+    @staticmethod
+    def collection(soup) -> str:
         """ get collection name"""
-        title = self.title(soup)[0].split('|')
-        collection = title[0]
-        collection = Common.remove_quotes(collection)
-        collection = collection.strip()
-        return collection
+        collection_name = soup.find('td', {'data-th': 'Collection Name'}).text
+        return collection_name
+
+    @staticmethod
+    def material(soup) -> str:
+        """ get material """
+        material = soup.find('td', {'data-th': 'Original Material'}).text
+        return material
+
+    @staticmethod
+    def weight(soup) -> str:
+        """ get weight """
+        weight = soup.find('td', {'data-th': 'Weight'}).text
+        return weight
+
+    @staticmethod
+    def pile_height(soup) -> str:
+        """ get weight """
+        pile_height = soup.find('td', {'data-th': 'Pile Height'}).text
+        return pile_height
+
+    @staticmethod
+    def country_manufacture(soup) -> str:
+        """ get weight """
+        country_manufacture = soup.find('td', {'data-th': 'Country of Manufacture'}).text
+        return country_manufacture
+
+    @staticmethod
+    def ship_by(soup) -> str:
+        """ ship_by """
+        ship_by = soup.find('td', {'data-th': 'Ship By'}).text
+        return ship_by
+
+    @staticmethod
+    def clearance(soup) -> str:
+        """ clearance """
+        clearance = soup.find('td', {'data-th': 'Clearance'}).text
+        return clearance

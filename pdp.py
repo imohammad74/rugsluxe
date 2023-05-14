@@ -23,14 +23,6 @@ class PDP:
             soup = BeautifulSoup(r.content, 'html.parser')
             data = {'category': category, 'data': soup}
             try:
-                features = PDPElements().features_title(soup)
-            except:
-                features = []
-            try:
-                feature_values = PDPElements.feature_value(soup)
-            except:
-                feature_values = []
-            try:
                 variants = PriceTable(data).main(data)
             except:
                 variants = []
@@ -39,7 +31,7 @@ class PDP:
             except:
                 title = ''
             try:
-                collection = PDPElements().collection(soup)
+                collection = PDPElements.collection(soup)
             except:
                 collection = ''
             try:
@@ -47,30 +39,42 @@ class PDP:
             except:
                 description = ''
             try:
-                design_id = PDPElements().design_id(soup)
+                design_id = PDPElements.design_id(soup)
             except:
                 design_id = ''
             try:
-                construction = feature_values[(features.index('Construction'))]
-            except:
-                construction = ''
-            try:
-                material = feature_values[(features.index('Material'))]
+                material = PDPElements.material(soup)
             except:
                 material = ''
+            try:
+                weight = PDPElements.weight(soup)
+            except:
+                weight = ''
+            try:
+                pile_height = PDPElements.pile_height(soup)
+            except:
+                pile_height = ''
+            try:
+                country_manufacture = PDPElements.country_manufacture(soup)
+            except:
+                country_manufacture = ''
+            try:
+                ship_by = PDPElements.ship_by(soup)
+            except:
+                ship_by = ''
+            try:
+                clearance = PDPElements.clearance(soup)
+            except:
+                clearance = ''
             for variant in variants:
                 try:
                     size = variant['size']
                 except:
                     size = ''
                 try:
-                    shape = variant['shape']
+                    shape = PDPElements.shape(soup)
                 except:
                     shape = ''
-                try:
-                    msrp = variant['msrp']
-                except:
-                    msrp = ''
                 try:
                     sale_price = variant['price']
                 except:
@@ -87,46 +91,52 @@ class PDP:
                         {'column': 'size', 'value': size},
                         {'column': 'shape', 'value': shape},
                         {'column': 'brand', 'value': brand},
-                        {'column': 'weave', 'value': construction},
                         {'column': 'material', 'value': material},
-                        {'column': 'msrp', 'value': msrp},
+                        {'column': 'sale_price', 'value': sale_price},
                         {'column': 'collection', 'value': collection},
                         {'column': 'design_id', 'value': design_id},
                         {'column': 'sku', 'value': sku},
-                        {'column': 'sale_price', 'value': sale_price}
+                        {'column': 'clearance', 'value': clearance},
+                        {'column': 'ship_by', 'value': ship_by},
+                        {'column': 'country_manufacture', 'value': country_manufacture},
+                        {'column': 'pile_height', 'value': pile_height},
+                        {'column': 'weight', 'value': weight}
                     ]
 
                     try:
                         db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[2], columns=all_columns)
                         db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
                                        columns=[{'column': 'seq', 'value': i}], condition="name='URLs'")
-                        # print(all_columns)
                     except:
                         db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[3],
                                        columns=[{'column': 'url', 'value': url}])
-                        # print('error')
                 if category == 'pillow':
                     all_columns = [
                         {'column': 'Title', 'value': title},
+                        {'column': 'Description', 'value': description},
                         {'column': 'URL', 'value': url},
                         {'column': 'SKU', 'value': sku},
                         {'column': 'Shape', 'value': shape},
                         {'column': 'Brand', 'value': brand},
                         {'column': 'CollectionName', 'value': collection},
                         {'column': 'DesignId', 'value': design_id},
-                        {'column': 'Price', 'value': sale_price}
+                        {'column': 'Price', 'value': sale_price},
+                        {'column': 'Size', 'value': size},
+                        {'column': 'Material', 'value': material},
+                        {'column': 'Clearance', 'value': clearance},
+                        {'column': 'ShipBy', 'value': ship_by},
+                        {'column': 'CountryManufacture', 'value': country_manufacture},
+                        {'column': 'PileHeight', 'value': pile_height},
+                        {'column': 'Weight', 'value': weight}
                     ]
                     try:
                         db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[8], columns=all_columns)
                         db.update_rows(db_file=db.db_file(), table_name=db.db_table()[4],
                                        columns=[{'column': 'seq', 'value': i}], condition="name='PillowURLs'")
-                        # print(all_columns)
                     except:
                         db.insert_rows(db_file=db.db_file(), table_name=db.db_table()[3],
                                        columns=[{'column': 'url', 'value': url}])
-                        # print('error')
             print(f'"{category} -> {title}" finish!')
-        # driver.quit()
 
     def __init__(self, params):
         self.main(params)
